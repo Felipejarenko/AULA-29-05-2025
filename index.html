@@ -1,0 +1,171 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engenharia Civil: Construindo o Futuro</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.pexels.com/photos/1026166/pexels-photo-1026166.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+        }
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #1a202c;
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .footer {
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 1rem 0;
+            text-align: center;
+        }
+        .hero-img {
+            width: 100%;
+            max-width: 800px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 0 auto 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar fixed top-0 w-full shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Engenharia Civil</h1>
+            <div class="space-x-4">
+                <a href="#home" class="hover:text-gray-300">Início</a>
+                <a href="#sobre" class="hover:text-gray-300">Sobre</a>
+                <a href="#projetos" class="hover:text-gray-300">Projetos</a>
+                <a href="#contato" class="hover:text-gray-300">Contato</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4">Construindo o Futuro</h2>
+            <p class="text-lg md:text-xl mb-6">A engenharia civil molda o mundo com infraestrutura inovadora e sustentável.</p>
+            <img src="https://images.pexels.com/photos/1026166/pexels-photo-1026166.jpeg" alt="Obra de Engenharia Civil" class="hero-img">
+            <a href="#sobre" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Saiba Mais</a>
+        </div>
+    </section>
+
+    <!-- Sobre Section -->
+    <section id="sobre" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">Sobre a Engenharia Civil</h2>
+            <p class="text-lg text-center mb-6">A engenharia civil é a arte e a ciência de projetar e construir infraestruturas que sustentam a sociedade moderna, como pontes, edifícios, rodovias e sistemas de saneamento.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4">Infraestrutura</h3>
+                    <p>Projetamos estradas, pontes e túneis que conectam comunidades e impulsionam o progresso.</p>
+                </div>
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4">Sustentabilidade</h3>
+                    <p>Inovações em materiais e técnicas garantem construções mais verdes e duráveis.</p>
+                </div>
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4">Tecnologia</h3>
+                    <p>Utilizamos BIM e inteligência artificial para otimizar projetos e reduzir custos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projetos Section -->
+    <section id="projetos" class="py-16 bg-gray-100 bg-opacity-75">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-900">Projetos Icônicos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold">Ponte Estaiada</h3>
+                    <p>Um marco da engenharia moderna, combinando estética e funcionalidade.</p>
+                </div>
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold">Edifício Sustentável</h3>
+                    <p>Construções que utilizam energia renovável e materiais recicláveis.</p>
+                </div>
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold">Túnel Subterrâneo</h3>
+                    <p>Inovações em escavação para transporte eficiente e seguro.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contato Section -->
+    <section id="contato" class="py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-8">Entre em Contato</h2>
+            <p class="text-lg mb-6">Interessado em projetos de engenharia civil? Fale conosco!</p>
+            <div class="flex justify-center space-x-4">
+                <a href="mailto:contato@engcivil.com" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Enviar E-mail</a>
+                <a href="tel:+5511999999999" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700">Ligar</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container mx-auto px-4">
+            <p>© 2025 Engenharia Civil. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>
